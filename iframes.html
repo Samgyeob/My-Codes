@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반응형 iFrame 예제</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* html과 body가 뷰포트의 전체 높이를 차지하도록 설정 */
+        html, body {
+            height: 100%;
+            margin: 0; /* 기본 마진 제거 */
+            padding: 0; /* 기본 패딩 제거 */
+            font-family: 'Inter', sans-serif; /* Inter 폰트 적용 */
+            overflow: hidden; /* 스크롤바 제거, 내용이 뷰포트 안에 딱 맞게 */
+        }
+
+        /* 모든 iFrame들을 담을 하나의 컨테이너 */
+        .all-iframes-container {
+            display: grid; /* Grid 레이아웃 사용 */
+            grid-template-columns: 1fr 1fr; /* 두 개의 동일한 너비의 열 (왼쪽, 오른쪽) */
+            grid-template-rows: 1fr 1fr; /* 두 개의 동일한 높이의 행 (위, 아래) */
+            height: 100vh; /* 뷰포트 전체 높이를 차지 */
+            gap: 8px; /* iFrame들 사이에 간격 추가 */
+            padding: 8px; /* 컨테이너 내부 패딩 */
+            box-sizing: border-box; /* 패딩이 너비/높이에 포함되도록 설정 */
+            background-color: #1a202c; /* 다크 모드 배경색 */
+        }
+
+        /* 각 iFrame에 스타일 적용 */
+        .all-iframes-container iframe {
+            width: 100%; /* 그리드 셀 내에서 너비를 100%로 설정 */
+            height: 100%; /* 그리드 셀 내에서 높이를 100%로 설정 */
+            border: 2px solid #4a5568; /* 테두리 추가 */
+            border-radius: 0.5rem; /* 둥근 모서리 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+            background-color: #2d3748; /* iFrame 내부 배경색 (로딩 시 보임) */
+        }
+
+        /* 모바일 환경에서 iFrame이 너무 작아지지 않도록 최소 높이 설정 (선택 사항) */
+        /* Grid는 반응형으로 셀 크기를 조절하므로, 필요에 따라 최소 높이를 조정할 수 있습니다. */
+        @media (max-width: 768px) {
+            .all-iframes-container {
+                /* 모바일에서도 2x2 그리드 유지 */
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+            .all-iframes-container iframe {
+                min-height: 180px; /* 각 iFrame의 최소 높이 유지 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 모든 iFrame들을 하나의 컨테이너 안에 배치 (그리드 정렬) -->
+    <div class="all-iframes-container">
+        <!-- iFrame들은 코드 순서대로 그리드 셀에 채워집니다. -->
+        <iframe src="https://edition.cnn.com/" title="CNN 뉴스"></iframe>
+        <iframe src="https://jisike.ebs.co.kr/jisike/sso/login?returnUrl=https%3A%2F%2Fjisike.ebs.co.kr%3A443%2Fjisike%2Findex" title="EBS 지식채널 로그인"></iframe>
+        <iframe src="https://ssully.joins.com/" title="Ssully - 중앙일보"></iframe>
+        <iframe src="https://clova-x.naver.com/" title="Clova-X"></iframe>
+    </div>
+</body>
+</html>
+<!-- from Gemini -->

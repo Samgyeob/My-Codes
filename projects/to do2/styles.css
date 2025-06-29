@@ -1,0 +1,39 @@
+.study { background-color: #a2d2ff; }
+.health { background-color: #ffd6a5; }
+.clean { background-color: #caffbf; }
+
+li {
+  margin: 5px;
+  padding: 10px;
+  border-radius: 6px;
+  list-style: none;
+}
+
+.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+#reward-box {
+  margin-top: 20px;
+  padding: 10px;
+  border: 2px dashed #aaa;
+  text-align: center;
+}
+
+#unlock-section {
+  margin: 20px 0;
+  padding: 10px;
+  border: 2px solid #ccc;
+}
+
+.locked-category {
+  margin: 5px;
+  padding: 5px 10px;
+  background: #eee;
+  border: 1px solid #999;
+  cursor: pointer;
+}
+
+.hobby { background-color: #e0bbff; }
+.relationship { background-color: #ffb3c1; }
