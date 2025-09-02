@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>프로필 페이지</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f0f0;
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    .main-nav {
+      position: absolute;
+      top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    .main-nav a {
+      color: #34495e;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+    .main-nav a:hover {
+      background-color: #ecf0f1;
+    }
+    .profile-info {
+      margin-top: 2rem;
+    }
+    .profile-info h2 {
+      margin-bottom: 10px;
+    }
+    .level-bar {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .level-progress {
+      height: 25px;
+      background-color: #3498db;
+      text-align: center;
+      line-height: 25px;
+      color: white;
+      transition: width 0.5s;
+    }
+    .achievements {
+      margin-top: 2rem;
+      text-align: left;
+    }
+    .achievements h2 {
+      text-align: center;
+    }
+    .achievement-item {
+      padding: 10px;
+      background: #f9f9f9;
+      border-left: 4px solid #f1c40f;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="main-nav">
+    <a href="index.html">할 일</a>
+    <a href="farm.html">농장</a>
+    <a href="shop.html">상점</a>
+    <a href="profile.html">프로필</a>
+    <a href="quest.html">퀘스트</a>
+  </nav>
+
+  <div class="container">
+    <h1><span style="font-size: 1.5rem;">👤</span> 프로필</h1>
+    <div class="profile-info">
+      <h2>유저 레벨: 1</h2>
+      <p>경험치: 50 / 100</p>
+      <div class="level-bar">
+        <div class="level-progress" style="width: 50%;"></div>
+      </div>
+      <p>다음 레벨까지 50 XP 남았습니다.</p>
+    </div>
+    <div class="achievements">
+      <h2>획득한 칭호</h2>
+      <div class="achievement-item">인생의 싹 (레벨 1 달성)</div>
+      <div class="achievement-item">성실한 감자 재배자 (농장 퀘스트 10회 완료)</div>
+    </div>
+  </div>
+</body>
+</html>

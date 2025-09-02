@@ -1,3 +1,0 @@
-Hello, C++ File I/O!
-This is a second line.
-12345
