@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>퀘스트/이벤트</title>
+  <title>퀘스트</title>
   <style>
     body {
       display: flex;
@@ -47,77 +47,101 @@
     .main-nav a:hover {
       background-color: #ecf0f1;
     }
-    .quest-list {
+    .quest-list-container {
       margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+    }
+    .quest-list {
+      list-style-type: none;
+      padding: 0;
+      text-align: left;
     }
     .quest-item {
+      background: #ecf0f1;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      border: 1px solid #ddd;
     }
-    .quest-item.completed {
-      background: #eaf8e9;
+    .quest-text {
+      flex-grow: 1;
+      cursor: pointer;
     }
-    .quest-item.completed h3 {
+    .quest-text.completed {
       text-decoration: line-through;
-      color: #777;
+      color: #7f8c8d;
     }
-    .complete-btn {
-      background-color: #2ecc71;
+    .quest-reward {
+      background: #27ae60;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+    .claim-btn {
+      background: #3498db;
       color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
+      font-size: 0.9rem;
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
   <nav class="main-nav">
-    <a href="index.html">할 일</a>
-    <a href="farm.html">농장</a>
-    <a href="shop.html">상점</a>
-    <a href="profile.html">프로필</a>
-    <a href="quest.html">퀘스트</a>
+    <a href="index.html">TO DO</a>
+    <a href="farm.html">FARM</a>
+    <a href="shop.html">SHOP</a>
+    <a href="profile.html">PROFILE</a>
+    <a href="quest.html">QUESTS</a>
   </nav>
 
   <div class="container">
-    <h1><span style="font-size: 1.5rem;">🎯</span> 일일 퀘스트</h1>
-    <p>오늘의 인생을 위한 미션을 완수하세요!</p>
-    <div class="quest-list">
-      <div class="quest-item">
-        <h3><span style="font-size: 1.2rem;">🛏️</span> 이불 개기</h3>
-        <button class="complete-btn" onclick="markCompleted(this)">완료</button>
-      </div>
-      <div class="quest-item">
-        <h3><span style="font-size: 1.2rem;">🦷</span> 하루 양치 3번 이상</h3>
-        <button class="complete-btn" onclick="markCompleted(this)">완료</button>
-      </div>
-      <div class="quest-item">
-        <h3><span style="font-size: 1.2rem;">🧺</span> 빨래하기</h3>
-        <button class="complete-btn" onclick="markCompleted(this)">완료</button>
-      </div>
-      <div class="quest-item">
-        <h3><span style="font-size: 1.2rem;">🧹</span> 청소기 돌리기</h3>
-        <button class="complete-btn" onclick="markCompleted(this)">완료</button>
-      </div>
+    <h1><span style="font-size: 1.5rem;">📜</span> QUESTS</h1>
+    <p>Complete your mission for today's life!</p>
+    <div class="quest-list-container">
+      <ul class="quest-list">
+        <li class="quest-item">
+          <span class="quest-text">Complete one task for today</span>
+          <span class="quest-reward">🪙 10</span>
+          <button class="claim-btn">Get Rewards</button>
+        </li>
+        <li class="quest-item">
+          <span class="quest-text">Complete 3 tasks for today</span>
+          <span class="quest-reward">🪙 30</span>
+          <button class="claim-btn">Get Rewards</button>
+        </li>
+        <li class="quest-item">
+          <span class="quest-text">Complete 5 tasks for today</span>
+          <span class="quest-reward">🪙 50</span>
+          <button class="claim-btn">Get Rewards</button>
+        </li>
+        <li class="quest-item">
+          <span class="quest-text">Brush your teeth more than 3 times</span>
+          <span class="quest-reward">🪙 5</span>
+          <button class="claim-btn">Get Rewards</button>
+        </li>
+        <li class="quest-item">
+          <span class="quest-text">Fold your blanket</span>
+          <span class="quest-reward">🪙 5</span>
+          <button class="claim-btn">Get Rewards</button>
+        </li>
+        <li class="quest-item">
+          <span class="quest-text">Do laundry</span>
+          <span class="quest-reward">🪙 10</span>
+          <button class="claim-btn">Get Rewards</button>
+        </li>
+        <li class="quest-item">
+          <span class="quest-text">Clean your spaces</span>
+          <span class="quest-reward">🪙 15</span>
+          <button class="claim-btn">Get Rewards</button>
+        </li>
+      </ul>
     </div>
   </div>
-
-  <script>
-    function markCompleted(button) {
-      const item = button.closest('.quest-item');
-      item.classList.add('completed');
-      button.disabled = true;
-      button.textContent = '완료됨';
-    }
-  </script>
 </body>
 </html>

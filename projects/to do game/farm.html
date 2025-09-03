@@ -73,16 +73,16 @@
 </head>
 <body>
   <nav class="main-nav">
-    <a href="index.html">할 일</a>
-    <a href="farm.html">농장</a>
-    <a href="shop.html">상점</a>
-    <a href="profile.html">프로필</a>
-    <a href="quest.html">퀘스트</a>
+    <a href="index.html">TO DO</a>
+    <a href="farm.html">FARM</a>
+    <a href="shop.html">SHOP</a>
+    <a href="profile.html">PROFILE</a>
+    <a href="quest.html">QUESTS</a>
   </nav>
 
   <div class="container">
-    <h1><span style="font-size: 1.5rem;">🏡</span> 나의 농장</h1>
-    <p>오늘의 할 일을 모두 완료하면 감자가 자랍니다!</p>
+    <h1><span style="font-size: 1.5rem;">🏡</span> MY FARM</h1>
+    <p>When you complete all of today's tasks, potatoes will grow!</p>
     <div class="farm-grid">
       <div class="farm-plot" onclick="growCrop(this)">🌱</div>
       <div class="farm-plot" onclick="growCrop(this)">🌱</div>
@@ -114,7 +114,7 @@
           text-align: center;
         `;
         messageBox.innerHTML = `
-          <p>감자를 수확했습니다! 상점에서 판매하세요.</p>
+          <p>Harvested potatoes! Sell them in the shop.</p>
           <button onclick="this.parentElement.remove()">확인</button>
         `;
         document.body.appendChild(messageBox);
