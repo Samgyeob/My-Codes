@@ -1,0 +1,149 @@
+/* 전체 초기화 */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ================= Header 1 ================= */
+.header1 {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #F5F5F7;
+  z-index: 100;
+  padding: 10px 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+}
+
+.logo-link img {
+  height: 35px;
+  width: auto;
+}
+
+.main-menu {
+  display: flex;
+  gap: 40px;
+}
+
+.menu-item {
+  position: relative;
+}
+
+.menu-item > a {
+  text-decoration: none;
+  color: #1d1d1f;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 0;
+  display: block;
+  cursor: pointer;
+}
+
+/* 드롭다운 */
+.menu-item .dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border: 1px solid #d6d6d6;
+  border-radius: 6px;
+  min-width: 200px;
+  max-height: 400px;
+  padding: 8px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 50;
+  overflow: visible;
+  transition: all 0.3s ease;
+}
+
+.menu-item:hover .dropdown {
+  display: block;
+  animation: dropdownFade 0.3s ease forwards;
+}
+
+.dropdown a {
+  display: block;
+  padding: 8px 20px;
+  color: #1d1d1f;
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.dropdown a:hover {
+  background-color: #e8e8ed;
+  color: #0066cc;
+  transform: scale(1.05);
+}
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-10px) translateX(-50%);}
+  to { opacity: 1; transform: translateY(0) translateX(-50%);}
+}
+
+/* ================= Header 2 ================= */
+/* ================= Header 2 ================= */
+.header2 {
+  position: fixed;
+  top: 60px;
+  width: 100%;
+  background-color: #fff;
+  z-index: 90;
+  text-align: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #000;
+}
+
+.header2-container {
+  display: inline-flex;
+  gap: 60px;
+}
+
+.header2 a {
+  text-decoration: none;
+  color: #1d1d1f;
+  font-weight: 400;  /* 기본 regular */
+  font-size: 18px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.header2 a {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.header2 a:hover {
+  color: #0066cc;
+  transform: scale(1.05); /* 1.1보다 조금만 확대 */
+}
+
+
+
+/* 애니메이션 keyframes */
+@keyframes fadeUp {
+  from {
+    opacity: 0.6;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ================= Main Content ================= */
+.content {
+  margin-top: 140px; /* 헤더1+헤더2 높이 감안 */
+  text-align: center;
+  padding: 20px;
+}

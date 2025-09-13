@@ -1,0 +1,80 @@
++메인 헤더와 갤러리 사진 제외 버튼과 박스는 라운딩
+
+1️⃣ Materials to be collected (content-focused)
+IMUSA)
+Logo/Representative Image:
+*(png, blue) logo file
+
+Description of the organization or network to which the church belongs (e.g., international mission network, vision):
+IMUSA provides opportunities for the next generation of Koreans and Americans to achieve balanced growth in faith, life, learning, and missions. It also lays the foundation for the expansion of local church ministries in the US and missionary work in North, Central, and South America.
+
+Short Introduction:
+The IM Mission's US headquarters aims to fulfill its missionary mission in the last days by nurturing true Christians with a holistic approach, whole character, and omnidirectionality. It also fosters global leaders with exceptional spirituality, skills, and physical strength. It also serves as a headquarters for human, material, and strategic content support for missions in North America, Central and South America, and the world.
+
+KFD)
+Event Photos (Food Sharing, Fellowship):
+*(jpg) picture, (showing food) mp4 file, (png) poster
+
+Introduction of Food:
+Bulgogi- Thinly sliced marinated beef, cooked over an open flame until tender and slightly charred.
+Japchae- Stir-fried glass noodles with vegetables and sometimes meat, often seasoned with soy sauce and sugar.
+Egg Roll- A savory pastry filled with various ingredients such as vegetables, meat, or seafood, wrapped in a thin egg-based dough and fried.
+Kimchi Pancake- A savory Korean pancake made with kimchi and flour batter, typically pan-fried until crispy.
+Watermelon Hwachae- A refreshing Korean dessert made from watermelon juice, ice, and sweet syrup, often served with floating pieces of watermelon.
+Tteokbokki- Spicy rice cakes simmered in a sweet and spicy sauce, often garnished with fish cakes and green onions.
+
+Event Purpose (Cultural Exchange, Gospel Hospitality):
+KFD is not simply a small festival or event organized by foreigners. Its purpose is to share IM USA's mission and vision, encourage people to join in, and ultimately, create disciples who become like Jesus.
+
+First Friday in Bryan)
+Brief Description:
+Participation in a community event held in downtown Bryan on the first Friday of every month
+
+How the church serves or participates:
+Every first Friday of the month, people gather in the Bryan area near College Station to showcase their businesses through booths and perform various performances. This First Friday in Bryan event typically draws between 2,000 and 8,000 attendees, making it the largest event in the area.
+We go there to spread the gospel! During our street evangelism sessions, we often share Bibles with the Tree of Life Ministry team!
+Our students also perform performances prepared in advance.
+
+Campus Ministry)
+Photos of student gatherings:
+*(png, svm, worship, life goup, bible study, strategy meeting) event posters
+
+Activities in the school (Blinn College, Texas A&M):
+Activities of the INTO-Club, which students attending Blinn College's Bryan campus belong to, include SVM Seminars (lectures and activities on tips for college success, plus a free pizza lunch), busking, life groups, and Torah (morning Bible study).
+
+Outreach & Mission)
+Photos of mission trips (domestic):
+*links
+(LA mission google photo)https://photos.app.goo.gl/CauuRgLtnpcy7CJt7
+(LA Sketch video youtube)https://youtu.be/jrZNpCnPc48?feature=shared
+
+Vision Statement: I am willing to go anywhere at any time, to do anything for Jesus Christ.
+Goals: first, to provide homeless feeding services, and second, to establish a global refugee mission center. Before embarking on this mission, we fervently prayed that God would safely guide us through this journey.
+Specific examples of activities: LA short-term mission trip- serving the homeless
+
+2️⃣ Design Concept (UI Element-Specific Functions)
+Main Header (Top of Ministry Page) Large Title: “Our Ministries”
+
+Short Phrase: “Serving our campus, our city, and the nations for God’s glory.”
+Function: Show photos of each ministry using a slide banner or video clip
+
+Card Layout (Introduction Blocks for Each Keyword)
+Design each keyword as a card-shaped box
+Image + Title + 2-Line Summary
+Function: Clicking on a card will open “View Details (Modal Window or Separate Page)”
+
+Gallery Section
+📷 Display photos centered on the image (e.g., KFD food photos, snapshots of campus gatherings)
+Function: Click to enlarge, swipe left and right
+
+Call to Action (CTA, 참여 버튼)
+"Join Us" / "Volunteer" / "Contact Leader" buttons below each ministry introduction
+Function: Direct link to contact form or email
+
+Footer
+Preview of next KFD date, Campus Bible Study schedule
+Function: Link to event page
+
+✅ 정리:
+자료는 사진, 짧은 소개글, 목적, 일정을 확보해야 하고,
+디자인은 카드형 + 갤러리 + 참여 버튼 구조로 가면 깔끔해요.

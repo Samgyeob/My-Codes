@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule - Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #f4f4f4;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        /* Calendar Styles */
+        .view-section {
+            padding-top: 1rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .current-month-year {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .calendar {
+            border: none;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .day-names {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: #eee;
+            font-weight: bold;
+            text-align: center;
+            padding: 0.5rem 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #ddd;
+        }
+
+        .day {
+            background-color: #f4f4f4;
+            padding: 10px;
+            min-height: 80px;
+            text-align: right;
+            position: relative;
+            border: none;
+            box-shadow: none;
+        }
+
+        .day.has-event {
+            background-color: #e6f2ff;
+            border: none;
+            box-shadow: none;
+        }
+
+        .event {
+            font-size: 0.8em;
+            padding: 3px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            margin-top: 5px;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>This Month at IM FBC</h1>
+
+        <!-- Calendar View -->
+        <div id="calendar-view" class="view-section">
+            <div class="calendar-header">
+                <div class="current-month-year">September, 2025</div>
+            </div>
+            <div class="calendar">
+                <div class="day-names">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar days will be generated here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calendarGrid = document.getElementById('calendar-grid');
+            let currentMonth = 8; // September (0-indexed)
+            let currentYear = 2025;
+
+            // Sample data for demonstration
+            const events = [
+                { date: '2025-09-06', type: 'gathering', name: 'KFD Preparation', time: 'Afternoon' },
+                { date: '2025-09-07', type: 'worship', name: 'DNA-12', time: '11:30 AM - 12:30 PM' },
+                { date: '2025-09-07', type: 'worship', name: 'Into Worship', time: '2:00 PM - 4:00 PM' },
+                { date: '2025-09-13', type: 'kfd', name: 'KFD', time: '4:00 PM - 9:00 PM' },
+                { date: '2025-09-14', type: 'worship', name: 'DNA-12', time: '11:30 AM - 12:30 PM' },
+                { date: '2025-09-14', type: 'worship', name: 'Into Worship', time: '2:00 PM - 4:00 PM' },
+                { date: '2025-09-20', type: 'gathering', name: 'Fellowship Activity', time: 'Afternoon' },
+                { date: '2025-09-21', type: 'worship', name: 'DNA-12', time: '11:30 AM - 12:30 PM' },
+                { date: '2025-09-21', type: 'worship', name: 'Into Worship', time: '2:00 PM - 4:00 PM' },
+                { date: '2025-09-27', type: 'gathering', name: 'Fellowship Activity', time: 'Afternoon' },
+                { date: '2025-09-28', type: 'worship', name: 'DNA-12', time: '11:30 AM - 12:30 PM' },
+                { date: '2025-09-28', type: 'worship', name: 'Into Worship', time: '2:00 PM - 4:00 PM' },
+            ];
+
+            // Function to render the calendar
+            function renderCalendar(month, year) {
+                calendarGrid.innerHTML = '';
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const startingDay = firstDay.getDay();
+
+                // Fill in leading empty days
+                for (let i = 0; i < startingDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.classList.add('day');
+                    calendarGrid.appendChild(emptyDay);
+                }
+
+                // Fill in the days of the month
+                for (let i = 1; i <= lastDay.getDate(); i++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.classList.add('day');
+                    dayElement.textContent = i;
+                    
+                    const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    const dayEvents = events.filter(event => event.date === fullDate);
+
+                    if (dayEvents.length > 0) {
+                        dayElement.classList.add('has-event');
+                        dayEvents.forEach(event => {
+                            const eventElement = document.createElement('div');
+                            eventElement.classList.add('event');
+                            eventElement.textContent = event.name;
+                            dayElement.appendChild(eventElement);
+                        });
+                    }
+
+                    calendarGrid.appendChild(dayElement);
+                }
+            }
+
+            // Initial render
+            renderCalendar(currentMonth, currentYear);
+        });
+    </script>
+</body>
+</html>
