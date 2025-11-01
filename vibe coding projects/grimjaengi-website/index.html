@@ -1,0 +1,1320 @@
+function initializeStage(stageNumber) {
+            const stage = gameState.stages[stageNumber];
+            if (!stage) return;
+
+            // 배경 변경
+            gameContainer.style.backgroundImage = `url('${stage.background}')`;
+            
+            // 스테이지 제목 업데이트
+            const stageEmojis = ['🏔️', '🌲', '🏰'];
+            stageTitle.textContent = `${stageEmojis[stageNumber - 1]} ${stage.name}`;
+
+            // 기존 동적 요소들 제거
+            document.querySelectorAll('.dynamic-npc, .dynamic-spot').forEach(el => el.remove());
+
+            // NPC들 생성
+            stage.npcs.forEach((npcData, index) => {
+                const npcElement = document.createElement('div');
+                npcElement.className = 'npc dynamic-npc';
+                npcElement.dataset.npc = npcData.id;
+                npcElement.style.left = npcData.x + 'px';
+                npcElement.style.top = npcData.y + 'px';
+                
+                const npcEmojis = {
+                    painter: '👨‍🎨', merchant: '👨‍💼', artist: '👩‍🎨',
+                    fairy: '🧚‍♀️', wizard: '🧙‍♂️', elf: '🧝‍♂️',
+                    dragon: '🐉', knight: '⚔️', princess: '👸'
+                };
+                
+                npcElement.innerHTML = `
+                    ${npcEmojis[npcData.id] || '👤'}
+                    <div class="npc-indicator" style="display: ${npcData.talked ? 'none' : 'flex'}">!</div>
+                `;
+                
+                npcElement.addEventListener('click', () => startDialog(npcData.id));
+                gameContainer.appendChild(npcElement);
+            });
+
+            // 그림 장소들 생성
+            stage.drawingSpots.forEach((spotData, index) => {
+                const spotElement = document.createElement('div');
+                spotElement.className = 'drawing-spot dynamic-spot';
+                spotElement.id = spotData.id;
+                spotElement.style.left = spotData.x + 'px';
+                spotElement.style.top = spotData.y + 'px';
+                
+                const spotEmojis = {
+                    1: ['🌅', '🏔️', '🌸', '🌊'],
+                    2: ['🌳', '🌙', '🌿', '🌈'],
+                    3: ['💎', '👑', '🌅', '✨']
+                };
+                
+                spotElement.innerHTML = spotData.used ? '✅' : spotEmojis[stageNumber][index];
+                if (spotData.used) {
+                    spotElement.classList.add('used');
+                }
+                
+                gameContainer.appendChild(spotElement);
+            });
+
+            // 포털 상태 업데이트
+            updatePortals();
+        }
+
+        function updatePortals() {
+            // 왼쪽 포털 (이전 스테이지)
+            if (gameState.currentStage <= 1) {
+                leftPortal.classList.add('locked');
+                leftPortal.style.opacity = '0.3';
+                leftPortal.style.cursor = 'not-allowed';
+            } else {
+                leftPortal.classList.remove('locked');
+                leftPortal.style.opacity = '1';
+                leftPortal.style.cursor = 'pointer';
+            }
+
+            // 오른쪽 포털 (다음 스테이지)
+            const currentStage = gameState.stages[gameState.currentStage];
+            const allCompleted = currentStage.drawingSpots.every(spot => spot.used);
+            
+            if (gameState.currentStage >= gameState.maxStage || !allCompleted) {
+                rightPortal.classList.add('locked');
+                rightPortal.style.opacity = allCompleted ? '1' : '0.3';
+                if (!allCompleted) {
+                    rightPortal.style.cursor = 'not-allowed';
+                } else {
+                    rightPortal.style.cursor = 'pointer';
+                }
+            } else {
+                rightPortal.classList.remove('locked');
+                rightPortal.style.opacity = '1';
+                rightPortal.style.cursor = 'pointer';
+            }
+        }
+
+        function goToPreviousStage() {
+            if (gameState.currentStage <= 1 || gameState.character.isDrawing || gameState.character.isInDialog) return;
+
+            gameState.currentStage--;
+            transitionToStage();
+        }
+
+        function goToNextStage() {
+            const currentStage = gameState.stages[gameState.currentStage];
+            const allCompleted = currentStage.drawingSpots.every(spot => spot.used);
+            
+            if (!allCompleted) {
+                showMessage('❌ 모든 작품을 완성해야 다음 스테이지로 갈 수 있습니다!');
+                return;
+            }
+            
+            if (gameState.currentStage >= gameState.maxStage || gameState.character.isDrawing || gameState.character.isInDialog) return;
+
+            gameState.currentStage++;
+            transitionToStage();
+        }
+
+        function transitionToStage() {
+            // 전환 효과 시작
+            stageTransition.classList.add('active');
+            gameState.character.isInDialog = true; // 이동 중 상호작용 방지
+
+            setTimeout(() => {
+                // 캐릭터 위치 리셋
+                gameState.character.x = 100;
+                gameState.character.y = 100;
+                gameState.character.artworks = 0; // 현재 스테이지 작품 수 리셋
+                updateCharacterPosition();
+
+                // 새 스테이지 초기화
+                initializeStage(gameState.currentStage);
+                updateUI();
+
+                // 스테이지별 환영 메시지
+                const welcomeMessages = {
+                    1: "🏔️ 평화로운 마을에 도착했습니다!",
+                    2: "🌲 신비한 숲으로 모험을 떠났습니다!",
+                    3: "🏰 드래곤의 성에 도달했습니다!"
+                };
+
+                showMessage(welcomeMessages[gameState.currentStage]);
+
+                // 전환 효과 종료
+                setTimeout(() => {
+                    stageTransition.classList.remove('active');
+                    gameState.character.isInDialog = false;
+                }, 500);
+            }, 500);
+        }<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>그림쟁이</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #333;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #87CEEB;
+        }
+
+        /* 시작 화면 */
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(50,50,100,0.9));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        .start-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .title {
+            font-size: 4rem;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 3px 3px 6px rgba(0,0,0,0.8), 0 0 20px #FFD700; }
+            to { text-shadow: 3px 3px 6px rgba(0,0,0,0.8), 0 0 30px #FFD700, 0 0 40px #FFD700; }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #FFF;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        /* UI 패널 */
+        .ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            min-width: 200px;
+        }
+
+        .save-load-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        /* 캐릭터 */
+        .character {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #FF6B6B;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            z-index: 5;
+            transition: transform 0.1s ease;
+        }
+
+        /* NPC */
+        .npc {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: #4ECDC4;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            cursor: pointer;
+            z-index: 4;
+            transition: all 0.3s ease;
+        }
+
+        .npc:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .npc-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #FFD700;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* 대화창 */
+        .dialog-box {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            z-index: 15;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dialog-box.show {
+            opacity: 1;
+        }
+
+        .dialog-name {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .dialog-text {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .dialog-continue {
+            text-align: right;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* 독백창 */
+        .monologue-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            max-width: 500px;
+            background: rgba(100, 50, 150, 0.95);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            text-align: center;
+            border: 2px solid #FFD700;
+        }
+
+        .monologue-box.show {
+            opacity: 1;
+        }
+
+        .monologue-text {
+            font-size: 1.3rem;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* 그림 장소 */
+        .drawing-spot {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 0, 0.8);
+            border: 3px dashed #FF8C00;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .drawing-spot:hover {
+            background: rgba(255, 255, 0, 1);
+            transform: scale(1.05);
+        }
+
+        .drawing-spot.used {
+            background: rgba(0, 255, 0, 0.6);
+            border-color: #228B22;
+        }
+
+        /* 버튼 스타일 */
+        .btn {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+        }
+
+        /* 진행바 */
+        .progress-container {
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        /* 메시지 */
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            text-align: center;
+            z-index: 25;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 400px;
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        /* 컨트롤 안내 */
+        .controls-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        /* 포털 문 스타일 */
+        .portal {
+            position: absolute;
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(145deg, #8B4513, #D2691E);
+            border-radius: 15px 15px 5px 5px;
+            border: 4px solid #654321;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            cursor: pointer;
+            z-index: 6;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .portal:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(145deg, #A0522D, #DEB887);
+        }
+
+        .portal.locked {
+            background: linear-gradient(145deg, #555, #777);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .portal.locked:hover {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .portal-label {
+            position: absolute;
+            bottom: -25px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .right-portal:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .left-portal:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* 스테이지 전환 효과 */
+        .stage-transition {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(0,0,0,0.9) 70%);
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .stage-transition.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 시작 화면 -->
+    <div class="start-screen" id="start-screen">
+        <div class="title">🎨 그림쟁이의 모험</div>
+        <div class="subtitle">
+            꿈꾸는 화가 아티의 이야기<br>
+            마을을 돌아다니며 그림을 그려보세요!
+        </div>
+        <button class="start-btn" id="start-game-btn">모험 시작하기</button>
+    </div>
+
+    <div class="game-container" id="game-container">
+        <!-- UI 패널 -->
+        <div class="ui-panel">
+            <h3 id="stage-title">🏔️ 평화로운 마을</h3>
+            <p>💰 골드: <span id="gold-display">0</span></p>
+            <p>🖼️ 현재: <span id="artworks-display">0</span>/4</p>
+            <p>🏆 총 작품: <span id="total-artworks">0</span></p>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="drawing-progress"></div>
+                </div>
+            </div>
+            <p id="status">마을을 탐험해보세요!</p>
+        </div>
+
+        <!-- 저장/불러오기 패널 -->
+        <div class="save-load-panel">
+            <button class="btn" id="save-btn">💾 저장</button>
+            <button class="btn secondary" id="load-btn">📂 불러오기</button>
+            <button class="btn secondary" id="reset-btn">🔄 리셋</button>
+        </div>
+
+        <!-- 포털 문들 -->
+        <div class="portal left-portal" id="left-portal" style="left: 20px; top: 50%; transform: translateY(-50%);">
+            🚪
+            <div class="portal-label">이전 스테이지</div>
+        </div>
+        <div class="portal right-portal" id="right-portal" style="right: 20px; top: 50%; transform: translateY(-50%);">
+            🚪
+            <div class="portal-label">다음 스테이지</div>
+        </div>
+
+        <!-- 캐릭터 -->
+        <div class="character" id="character">🎨</div>
+
+        <!-- NPC들과 그림 장소들은 동적으로 생성됩니다 -->
+
+        <!-- 대화창 -->
+        <div class="dialog-box" id="dialog-box">
+            <div class="dialog-name" id="dialog-name"></div>
+            <div class="dialog-text" id="dialog-text"></div>
+            <div class="dialog-continue">스페이스바를 눌러 계속...</div>
+        </div>
+
+        <!-- 독백창 -->
+        <div class="monologue-box" id="monologue-box">
+            <div class="monologue-text" id="monologue-text"></div>
+        </div>
+
+        <!-- 메시지 창 -->
+        <div class="message" id="message"></div>
+
+        <!-- 컨트롤 안내 -->
+        <div class="controls-info">
+            🎮 화살표키: 이동 | 스페이스바: 상호작용/대화 | E키: 그림그리기
+        </div>
+    </div>
+
+    <script>
+        // 게임 상태 관리
+        const gameState = {
+            gameStarted: false,
+            currentStage: 1,
+            maxStage: 3,
+            character: {
+                x: 100,
+                y: 100,
+                gold: 0,
+                artworks: 0,
+                totalArtworks: 0,
+                isDrawing: false,
+                isInDialog: false
+            },
+            stages: {
+                1: {
+                    name: "평화로운 마을",
+                    background: "village.jpg",
+                    npcs: [
+                        { 
+                            id: 'painter', 
+                            name: '스승 화가', 
+                            talked: false,
+                            x: 200, y: 150,
+                            dialogs: [
+                                "안녕하게나, 젊은 화가여! 나는 이 마을의 화가 스승이라네.",
+                                "그림은 마음으로 그리는 것이야. 기술도 중요하지만 열정이 더 중요하다네!",
+                                "마을 곳곳에 아름다운 풍경들이 있으니 찾아가서 그려보게나."
+                            ]
+                        },
+                        { 
+                            id: 'merchant', 
+                            name: '화구 상인', 
+                            talked: false,
+                            x: 800, y: 450,
+                            dialogs: [
+                                "어서 오세요! 최고급 화구만 판매합니다.",
+                                "좋은 그림을 그리려면 좋은 도구가 필요하죠.",
+                                "골드가 모이면 더 좋은 붓과 물감을 사러 오세요!"
+                            ]
+                        },
+                        { 
+                            id: 'artist', 
+                            name: '동료 화가', 
+                            talked: false,
+                            x: 600, y: 250,
+                            dialogs: [
+                                "안녕하세요! 저도 그림을 그리는 화가예요.",
+                                "이 마을의 풍경은 정말 아름다워서 영감이 샘솟아요.",
+                                "같이 열심히 그림 연습해요!"
+                            ]
+                        }
+                    ],
+                    drawingSpots: [
+                        { id: 'spot1', used: false, reward: 80, name: '아침 풍경', location: '언덕', x: 150, y: 300 },
+                        { id: 'spot2', used: false, reward: 120, name: '설산', location: '북쪽 산맥', x: 500, y: 200 },
+                        { id: 'spot3', used: false, reward: 100, name: '벚꽃', location: '마을 공원', x: 400, y: 400 },
+                        { id: 'spot4', used: false, reward: 90, name: '바다', location: '해안가', x: 750, y: 350 }
+                    ]
+                },
+                2: {
+                    name: "신비한 숲",
+                    background: "forest.jpg",
+                    npcs: [
+                        { 
+                            id: 'fairy', 
+                            name: '숲의 요정', 
+                            talked: false,
+                            x: 300, y: 200,
+                            dialogs: [
+                                "어머, 인간 화가가 우리 숲에 왔네요!",
+                                "이 숲에는 마법적인 풍경들이 가득해요.",
+                                "조심스럽게 그려주세요. 자연을 존중하는 마음으로요."
+                            ]
+                        },
+                        { 
+                            id: 'wizard', 
+                            name: '숲의 마법사', 
+                            talked: false,
+                            x: 700, y: 400,
+                            dialogs: [
+                                "젊은 화가여, 여기는 마법의 숲이다.",
+                                "그림에 마법을 담을 수 있다면... 특별한 일이 일어날지도 모르지.",
+                                "집중하고 정성스럽게 그려보게."
+                            ]
+                        },
+                        { 
+                            id: 'elf', 
+                            name: '엘프 가드', 
+                            talked: false,
+                            x: 500, y: 300,
+                            dialogs: [
+                                "이방인이여, 이 숲의 아름다움을 어떻게 표현할 건가?",
+                                "우리 엘프들도 예술을 사랑한다네.",
+                                "좋은 작품이 나오길 기대하겠어."
+                            ]
+                        }
+                    ],
+                    drawingSpots: [
+                        { id: 'fspot1', used: false, reward: 150, name: '마법의 나무', location: '고대 숲', x: 200, y: 350 },
+                        { id: 'fspot2', used: false, reward: 180, name: '요정의 연못', location: '신비한 샘터', x: 600, y: 150 },
+                        { id: 'fspot3', used: false, reward: 160, name: '달빛 풀밭', location: '엘프의 정원', x: 450, y: 450 },
+                        { id: 'fspot4', used: false, reward: 140, name: '무지개 폭포', location: '숨겨진 계곡', x: 800, y: 300 }
+                    ]
+                },
+                3: {
+                    name: "드래곤의 성",
+                    background: "castle.jpg",
+                    npcs: [
+                        { 
+                            id: 'dragon', 
+                            name: '고대 드래곤', 
+                            talked: false,
+                            x: 400, y: 200,
+                            dialogs: [
+                                "크흠... 인간 화가가 내 성까지 올라왔구나.",
+                                "용기는 인정하겠다. 하지만 여기는 쉽지 않을 것이야.",
+                                "진정한 예술가라면... 내 보물들을 그려볼 수 있을까?"
+                            ]
+                        },
+                        { 
+                            id: 'knight', 
+                            name: '용기사', 
+                            talked: false,
+                            x: 150, y: 400,
+                            dialogs: [
+                                "드래곤과 싸우러 왔다가... 그림쟁이를 만나는군.",
+                                "예술로 드래곤의 마음을 사로잡는다니, 흥미롭군.",
+                                "나도 그 결과가 궁금하다."
+                            ]
+                        },
+                        { 
+                            id: 'princess', 
+                            name: '공주', 
+                            talked: false,
+                            x: 700, y: 350,
+                            dialogs: [
+                                "오! 화가님이시군요! 저도 예술을 좋아해요.",
+                                "이 성에는 정말 장엄한 풍경들이 많아요.",
+                                "멋진 작품을 기대할게요!"
+                            ]
+                        }
+                    ],
+                    drawingSpots: [
+                        { id: 'cspot1', used: false, reward: 200, name: '드래곤의 보물', location: '보물 창고', x: 300, y: 300 },
+                        { id: 'cspot2', used: false, reward: 250, name: '왕좌의 방', location: '대궐전', x: 500, y: 180 },
+                        { id: 'cspot3', used: false, reward: 220, name: '성벽의 일몰', location: '높은 탑', x: 650, y: 400 },
+                        { id: 'cspot4', used: false, reward: 180, name: '고대 마법진', location: '지하 던전', x: 200, y: 450 }
+                    ]
+                }
+            },
+            story: {
+                introShown: false,
+                currentDialog: 0,
+                currentNpc: null
+            },
+            keys: {
+                up: false,
+                down: false,
+                left: false,
+                right: false
+            }
+        };
+
+        // NPC 대화 데이터와 독백
+        const monologues = [
+            "드디어 그림쟁이의 길을 시작하는군... 설레는 마음을 감출 수 없어.",
+            "이 마을의 아름다운 풍경들을 모두 그려보고 싶어!",
+            "스승님의 말씀처럼 마음으로 그려야겠어.",
+            "골드도 벌고 실력도 늘리고... 일석이조네!",
+            "모든 작품을 완성하면 진정한 화가가 될 수 있을 거야!",
+            "신비한 숲의 마법을 그림으로 담아보자!",
+            "드래곤의 성... 정말 웅장한 곳이야!"
+        ];
+
+        // DOM 요소들
+        const startScreen = document.getElementById('start-screen');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const gameContainer = document.getElementById('game-container');
+        const stageTransition = document.getElementById('stage-transition');
+        const character = document.getElementById('character');
+        const stageTitle = document.getElementById('stage-title');
+        const goldDisplay = document.getElementById('gold-display');
+        const artworksDisplay = document.getElementById('artworks-display');
+        const totalArtworksDisplay = document.getElementById('total-artworks');
+        const statusDisplay = document.getElementById('status');
+        const progressBar = document.getElementById('drawing-progress');
+        const messageBox = document.getElementById('message');
+        const dialogBox = document.getElementById('dialog-box');
+        const dialogName = document.getElementById('dialog-name');
+        const dialogText = document.getElementById('dialog-text');
+        const monologueBox = document.getElementById('monologue-box');
+        const monologueText = document.getElementById('monologue-text');
+        const saveBtn = document.getElementById('save-btn');
+        const loadBtn = document.getElementById('load-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const leftPortal = document.getElementById('left-portal');
+        const rightPortal = document.getElementById('right-portal');
+
+        // 이동 관련 변수
+        const moveSpeed = 3;
+        let animationId;
+
+        // DOM 로드 완료 후 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing game...');
+            
+            // 초기화
+            updateUI();
+            initializeStage(gameState.currentStage);
+
+            // 이벤트 리스너
+            if (startGameBtn) {
+                startGameBtn.addEventListener('click', function() {
+                    console.log('Start button clicked!');
+                    startGame();
+                });
+                console.log('Start button event listener added');
+            } else {
+                console.error('Start button not found!');
+            }
+            
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+            saveBtn.addEventListener('click', saveGame);
+            loadBtn.addEventListener('click', loadGame);
+            resetBtn.addEventListener('click', resetGame);
+            
+            // 포털 이벤트
+            leftPortal.addEventListener('click', () => goToPreviousStage());
+            rightPortal.addEventListener('click', () => goToNextStage());
+            
+            console.log('All event listeners added');
+        });
+
+        function startGame() {
+            gameState.gameStarted = true;
+            startScreen.classList.add('hidden');
+            
+            // 스테이지 1로 초기화
+            initializeStage(gameState.currentStage);
+            updateCharacterPosition(); // 캐릭터 위치 업데이트
+            
+            setTimeout(() => {
+                showMonologue(monologues[0]);
+                setTimeout(() => {
+                    gameState.story.introShown = true;
+                    startMovementLoop();
+                }, 3000);
+            }, 500);
+        }
+
+        function handleKeyDown(event) {
+            if (!gameState.gameStarted) return;
+
+            switch(event.code) {
+                case 'ArrowUp':
+                    gameState.keys.up = true;
+                    break;
+                case 'ArrowDown':
+                    gameState.keys.down = true;
+                    break;
+                case 'ArrowLeft':
+                    gameState.keys.left = true;
+                    break;
+                case 'ArrowRight':
+                    gameState.keys.right = true;
+                    break;
+                case 'Space':
+                    event.preventDefault();
+                    handleInteraction();
+                    break;
+                case 'KeyE':
+                    event.preventDefault();
+                    checkDrawingSpot();
+                    break;
+            }
+        }
+
+        function handleKeyUp(event) {
+            switch(event.code) {
+                case 'ArrowUp':
+                    gameState.keys.up = false;
+                    break;
+                case 'ArrowDown':
+                    gameState.keys.down = false;
+                    break;
+                case 'ArrowLeft':
+                    gameState.keys.left = false;
+                    break;
+                case 'ArrowRight':
+                    gameState.keys.right = false;
+                    break;
+            }
+        }
+
+        function startMovementLoop() {
+            function move() {
+                if (!gameState.gameStarted || gameState.character.isDrawing || gameState.character.isInDialog) {
+                    animationId = requestAnimationFrame(move);
+                    return;
+                }
+
+                let moved = false;
+                const char = gameState.character;
+
+                if (gameState.keys.up && char.y > 0) {
+                    char.y = Math.max(0, char.y - moveSpeed);
+                    moved = true;
+                }
+                if (gameState.keys.down && char.y < window.innerHeight - 60) {
+                    char.y = Math.min(window.innerHeight - 60, char.y + moveSpeed);
+                    moved = true;
+                }
+                if (gameState.keys.left && char.x > 0) {
+                    char.x = Math.max(0, char.x - moveSpeed);
+                    moved = true;
+                }
+                if (gameState.keys.right && char.x < window.innerWidth - 60) {
+                    char.x = Math.min(window.innerWidth - 60, char.x + moveSpeed);
+                    moved = true;
+                }
+
+                if (moved) {
+                    updateCharacterPosition();
+                    updateStatus();
+                }
+
+                animationId = requestAnimationFrame(move);
+            }
+            move();
+        }
+
+        function updateCharacterPosition() {
+            character.style.left = gameState.character.x + 'px';
+            character.style.top = gameState.character.y + 'px';
+        }
+
+        function updateStatus() {
+            const nearNpc = findNearestNPC();
+            const nearSpot = findNearestDrawingSpot();
+            
+            if (nearNpc) {
+                statusDisplay.textContent = `${nearNpc.name}와 대화하기 (스페이스바)`;
+            } else if (nearSpot) {
+                statusDisplay.textContent = `${nearSpot.name} 그리기 (E키)`;
+            } else {
+                statusDisplay.textContent = 'NPC나 그림 장소를 찾아보세요!';
+            }
+        }
+
+        function findNearestNPC() {
+            const char = gameState.character;
+            const currentStage = gameState.stages[gameState.currentStage];
+            
+            for (let npc of currentStage.npcs) {
+                const npcElement = document.querySelector(`[data-npc="${npc.id}"]`);
+                if (!npcElement) continue;
+                
+                const npcRect = npcElement.getBoundingClientRect();
+                const distance = Math.sqrt(
+                    Math.pow(char.x - (npcRect.left - 10), 2) + 
+                    Math.pow(char.y - (npcRect.top - 10), 2)
+                );
+                
+                if (distance < 100) {
+                    return npc;
+                }
+            }
+            return null;
+        }
+
+        function findNearestDrawingSpot() {
+            const char = gameState.character;
+            const currentStage = gameState.stages[gameState.currentStage];
+            
+            for (let spot of currentStage.drawingSpots) {
+                if (spot.used) continue;
+                
+                const spotElement = document.getElementById(spot.id);
+                if (!spotElement) continue;
+                
+                const spotRect = spotElement.getBoundingClientRect();
+                const distance = Math.sqrt(
+                    Math.pow(char.x - (spotRect.left - 10), 2) + 
+                    Math.pow(char.y - (spotRect.top - 10), 2)
+                );
+                
+                if (distance < 100) {
+                    return spot;
+                }
+            }
+            return null;
+        }
+
+        function handleInteraction() {
+            if (gameState.character.isInDialog) {
+                continueDialog();
+                return;
+            }
+
+            const nearNpc = findNearestNPC();
+            if (nearNpc) {
+                startDialog(nearNpc.id);
+            }
+        }
+
+        function startDialog(npcId) {
+            const currentStage = gameState.stages[gameState.currentStage];
+            const npc = currentStage.npcs.find(n => n.id === npcId);
+            if (!npc) return;
+
+            gameState.character.isInDialog = true;
+            gameState.story.currentNpc = npc;
+            gameState.story.currentDialog = 0;
+
+            showDialog(npc.name, npc.dialogs[0]);
+
+            // NPC 대화 완료 표시
+            if (!npc.talked) {
+                npc.talked = true;
+                const npcElement = document.querySelector(`[data-npc="${npcId}"]`);
+                const indicator = npcElement.querySelector('.npc-indicator');
+                if (indicator) {
+                    indicator.style.display = 'none';
+                }
+            }
+        }
+
+        function continueDialog() {
+            const npc = gameState.story.currentNpc;
+            if (!npc) return;
+
+            gameState.story.currentDialog++;
+            
+            if (gameState.story.currentDialog < npc.dialogs.length) {
+                showDialog(npc.name, npc.dialogs[gameState.story.currentDialog]);
+            } else {
+                endDialog();
+            }
+        }
+
+        function showDialog(name, text) {
+            dialogName.textContent = name;
+            dialogText.textContent = text;
+            dialogBox.classList.add('show');
+        }
+
+        function endDialog() {
+            dialogBox.classList.remove('show');
+            gameState.character.isInDialog = false;
+            gameState.story.currentNpc = null;
+            gameState.story.currentDialog = 0;
+
+            // 랜덤 독백 표시
+            if (Math.random() < 0.3) {
+                const randomMonologue = monologues[Math.floor(Math.random() * monologues.length)];
+                setTimeout(() => showMonologue(randomMonologue), 1000);
+            }
+        }
+
+        function showMonologue(text) {
+            monologueText.textContent = text;
+            monologueBox.classList.add('show');
+            setTimeout(() => {
+                monologueBox.classList.remove('show');
+            }, 3000);
+        }
+
+        function checkDrawingSpot() {
+            const nearSpot = findNearestDrawingSpot();
+            if (nearSpot && !nearSpot.used) {
+                startDrawing(nearSpot);
+            }
+        }
+
+        async function startDrawing(spot) {
+            gameState.character.isDrawing = true;
+            statusDisplay.textContent = `${spot.name} 그리는 중...`;
+            
+            showMessage(`🎨 ${spot.location}의 ${spot.name}을(를) 그리기 시작합니다!`);
+            
+            // 그림 그리기 진행 바 애니메이션
+            progressBar.style.width = '0%';
+            const duration = 4000;
+            const steps = 100;
+            const stepDuration = duration / steps;
+            
+            for (let i = 0; i <= steps; i++) {
+                progressBar.style.width = (i / steps * 100) + '%';
+                await new Promise(resolve => setTimeout(resolve, stepDuration));
+                
+                if (!gameState.character.isDrawing) return; // 중단된 경우
+            }
+
+            completeDrawing(spot);
+        }
+
+        function completeDrawing(spot) {
+            spot.used = true;
+            gameState.character.gold += spot.reward;
+            gameState.character.artworks += 1;
+            gameState.character.totalArtworks += 1;
+            gameState.character.isDrawing = false;
+
+            updateUI();
+            updatePortals(); // 포털 상태 업데이트
+            
+            // 사용된 스팟 표시
+            const spotElement = document.getElementById(spot.id);
+            spotElement.classList.add('used');
+            spotElement.innerHTML = '✅';
+            
+            // 캐릭터 바운스 애니메이션
+            character.classList.add('bounce');
+            setTimeout(() => character.classList.remove('bounce'), 600);
+
+            showMessage(`🎉 "${spot.name}" 작품 완성!\n${spot.reward} 골드 획득!`);
+
+            // 독백
+            setTimeout(() => {
+                showMonologue(`${spot.location}의 ${spot.name}... 정말 아름다운 작품이 나왔어!`);
+            }, 2000);
+
+            // 현재 스테이지의 모든 스팟을 완료했는지 확인
+            const currentStage = gameState.stages[gameState.currentStage];
+            if (currentStage.drawingSpots.every(s => s.used)) {
+                setTimeout(() => {
+                    if (gameState.currentStage < gameState.maxStage) {
+                        showMessage(`🌟 ${currentStage.name} 완료! 오른쪽 문으로 다음 스테이지에 도전하세요!`);
+                        setTimeout(() => {
+                            showMonologue("이 스테이지의 모든 작품을 완성했다! 다음 모험이 기다리고 있어!");
+                        }, 3000);
+                    } else {
+                        showMessage(`🏆 축하합니다! 모든 스테이지를 완료했습니다!\n총 ${gameState.character.totalArtworks}개 작품, ${gameState.character.gold} 골드!`);
+                        setTimeout(() => {
+                            showMonologue("드디어 모든 모험을 완료했다! 이제 진정한 전설의 화가가 되었어!");
+                        }, 3000);
+                    }
+                }, 3000);
+            }
+
+            statusDisplay.textContent = '다른 그림 장소를 찾아보세요!';
+            progressBar.style.width = '0%';
+        }
+
+        function updateUI() {
+            goldDisplay.textContent = gameState.character.gold;
+            artworksDisplay.textContent = gameState.character.artworks;
+            totalArtworksDisplay.textContent = gameState.character.totalArtworks;
+        }
+
+        function showMessage(text) {
+            messageBox.textContent = text;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveGame() {
+            const saveData = {
+                currentStage: gameState.currentStage,
+                character: gameState.character,
+                stages: gameState.stages,
+                story: gameState.story,
+                timestamp: new Date().toISOString()
+            };
+            
+            const saveString = JSON.stringify(saveData);
+            
+            // 간단한 다운로드 방식
+            const blob = new Blob([saveString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'grimjaengi_save.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showMessage('💾 게임이 저장되었습니다!');
+        }
+
+        function loadGame() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const saveData = JSON.parse(e.target.result);
+                            
+                            // 데이터 복원
+                            gameState.currentStage = saveData.currentStage;
+                            gameState.character = saveData.character;
+                            gameState.stages = saveData.stages;
+                            gameState.story = saveData.story;
+                            
+                            // 스테이지와 UI 업데이트
+                            initializeStage(gameState.currentStage);
+                            updateCharacterPosition();
+                            updateUI();
+                            
+                            if (!gameState.gameStarted) {
+                                startScreen.classList.add('hidden');
+                                gameState.gameStarted = true;
+                                startMovementLoop();
+                            }
+                            
+                            showMessage('📂 게임이 불러와졌습니다!');
+                        } catch (error) {
+                            showMessage('❌ 저장 파일을 읽는데 실패했습니다.');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function resetGame() {
+            if (confirm('정말로 게임을 처음부터 시작하시겠습니까?')) {
+                // 게임 상태 완전 초기화
+                gameState.gameStarted = false;
+                gameState.currentStage = 1;
+                gameState.character = {
+                    x: 100,
+                    y: 100,
+                    gold: 0,
+                    artworks: 0,
+                    totalArtworks: 0,
+                    isDrawing: false,
+                    isInDialog: false
+                };
+                
+                // 모든 스테이지 데이터 초기화
+                Object.values(gameState.stages).forEach(stage => {
+                    stage.npcs.forEach(npc => npc.talked = false);
+                    stage.drawingSpots.forEach(spot => spot.used = false);
+                });
+                
+                gameState.story = {
+                    introShown: false,
+                    currentDialog: 0,
+                    currentNpc: null
+                };
+
+                // UI 초기화
+                startScreen.classList.remove('hidden');
+                dialogBox.classList.remove('show');
+                monologueBox.classList.remove('show');
+                stageTransition.classList.remove('active');
+                
+                // 스테이지 1로 초기화
+                initializeStage(1);
+                updateCharacterPosition();
+                updateUI();
+                progressBar.style.width = '0%';
+                statusDisplay.textContent = '마을을 탐험해보세요!';
+                
+                // 애니메이션 중지
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                
+                showMessage('🔄 게임이 초기화되었습니다!');
+            }
+        }
+
+        // 윈도우 리사이즈 대응
+        window.addEventListener('resize', () => {
+            const char = gameState.character;
+            char.x = Math.min(char.x, window.innerWidth - 60);
+            char.y = Math.min(char.y, window.innerHeight - 60);
+            updateCharacterPosition();
+        });
+    </script>
+</body>
+</html>

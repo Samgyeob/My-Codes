@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Smart Tab Companion",
+  "version": "1.0.0",
+  "description": "Whale browser sidebar extension analyzes the contents of the current tab and provides relevant information and notes.",
+  "permissions": ["tabs", "activeTab", "storage"],
+  "sidebar_action": {
+    "default_title": "Smart Tab Companion",
+    "default_panel": "sidebar.html"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  }
+}
