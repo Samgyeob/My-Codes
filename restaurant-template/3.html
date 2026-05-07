@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOLT EATS — Order. Eat. Repeat.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0A0A08;
+    --black2: #111110;
+    --lime: #C8F135;
+    --lime-dim: #A8CC20;
+    --lime-dark: #7A9912;
+    --white: #F5F5F0;
+    --gray: #1C1C1A;
+    --gray2: #2A2A27;
+    --muted: #666660;
+    --border: rgba(200,241,53,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    font-size: 16px;
+    line-height: 1.6;
+    cursor: default;
+    padding-bottom: 80px; /* sticky bar clearance */
+  }
+
+  /* ── Promo Ticker ── */
+  .ticker-wrap {
+    background: var(--lime);
+    color: var(--black);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 10px 0;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .ticker-track {
+    display: inline-block;
+    animation: ticker 22s linear infinite;
+  }
+  .ticker-track span {
+    display: inline-block;
+    padding: 0 36px;
+  }
+  .ticker-track span::after {
+    content: '✦';
+    margin-left: 36px;
+    opacity: 0.5;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── Nav ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 28px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: rgba(10,10,8,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.08em;
+    color: var(--lime);
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--lime); }
+  .nav-cta {
+    background: var(--lime);
+    color: var(--black);
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.15s, transform 0.1s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-cta:hover { background: var(--lime-dim); }
+  .nav-cta:active { transform: scale(0.97); }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: calc(100svh - 117px);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: 48px 28px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,241,53,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,241,53,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  .hero-bg-glow {
+    position: absolute;
+    top: -80px;
+    right: -120px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(200,241,53,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-content { position: relative; align-self: center; }
+  .hero-tag {
+    display: inline-block;
+    background: var(--lime);
+    color: var(--black);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeIn 0.5s ease 0.1s forwards;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 18vw, 140px);
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    color: var(--white);
+    opacity: 0;
+    animation: slideUp 0.6s ease 0.2s forwards;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--lime);
+    display: block;
+  }
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 400px;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 0.4s forwards;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeIn 0.6s ease 0.55s forwards;
+  }
+  .btn-lime {
+    background: var(--lime);
+    color: var(--black);
+    padding: 14px 32px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.15s, transform 0.1s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-lime:hover { background: var(--lime-dim); }
+  .btn-lime:active { transform: scale(0.97); }
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    padding: 14px 28px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    border: 1px solid rgba(245,245,240,0.2);
+    transition: border-color 0.2s, color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-outline:hover { border-color: var(--lime); color: var(--lime); }
+
+  /* Hero stats strip */
+  .hero-stats {
+    position: relative;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    margin-top: 16px;
+  }
+  .hero-stat {
+    flex: 1;
+    padding-right: 24px;
+    border-right: 1px solid var(--border);
+    margin-right: 24px;
+  }
+  .hero-stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+  .hero-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--lime);
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── Featured Item ── */
+  .featured-section {
+    padding: 72px 28px;
+    background: var(--gray);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .section-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lime);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 7vw, 64px);
+    letter-spacing: 0.04em;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 40px;
+  }
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 16px;
+  }
+  .feat-card {
+    background: var(--black2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+  .feat-card:hover { border-color: var(--lime); transform: translateY(-4px); }
+  .feat-card-hero {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    background: linear-gradient(135deg, #1a1a17 0%, #111110 100%);
+    position: relative;
+  }
+  .feat-card.large .feat-card-hero { height: 300px; font-size: 80px; }
+  .feat-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: var(--lime);
+    color: var(--black);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .feat-card-body { padding: 20px; }
+  .feat-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .feat-card-desc {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .feat-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .feat-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--lime);
+    letter-spacing: 0.04em;
+  }
+  .feat-add-btn {
+    background: var(--lime);
+    color: var(--black);
+    border: none;
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .feat-add-btn:hover { background: var(--lime-dim); }
+
+  /* ── Hours & Contact ── */
+  .info-section {
+    padding: 72px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .info-block-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 28px;
+  }
+  .hours-list { list-style: none; }
+  .hours-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-weight: 300;
+  }
+  .hours-list li .day { color: var(--muted); letter-spacing: 0.04em; }
+  .hours-list li .time { color: var(--white); }
+  .hours-list li.today-row .day { color: var(--lime); }
+  .hours-list li.today-row .time { color: var(--lime); font-weight: 500; }
+  .hours-list li.closed .time { color: var(--muted); }
+
+  .contact-big-phone {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 52px);
+    color: var(--lime);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    transition: color 0.2s;
+    line-height: 1.1;
+  }
+  .contact-big-phone:hover { color: var(--lime-dim); }
+  .contact-sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.7;
+  }
+  .contact-secondary {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .contact-secondary-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .contact-secondary a {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--white);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .contact-secondary a:hover { color: var(--lime); }
+
+  /* ── Location ── */
+  .location-section {
+    padding: 72px 28px;
+    background: var(--gray);
+    border-top: 1px solid var(--border);
+  }
+  .location-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 36px;
+    align-items: center;
+  }
+  .address-block {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .address-block strong {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--white);
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+    font-weight: 400;
+  }
+  .directions-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    background: transparent;
+    color: var(--lime);
+    border: 1px solid var(--lime);
+    padding: 12px 24px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .directions-link:hover { background: var(--lime); color: var(--black); }
+  .map-box {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--black2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .map-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,241,53,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,241,53,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .map-box:hover { border-color: var(--lime); }
+  .map-box span { position: relative; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime); font-weight: 500; }
+  .map-box small { position: relative; font-size: 12px; color: var(--muted); font-weight: 300; }
+
+  /* ── Sticky Bottom Bar ── */
+  .sticky-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10,10,8,0.96);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 300;
+    gap: 16px;
+  }
+  .sticky-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .sticky-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--white);
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--lime);
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+  .sticky-phone {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+  .sticky-phone:hover { color: var(--lime); }
+  .sticky-bar-cta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .sticky-order-btn {
+    background: var(--lime);
+    color: var(--black);
+    padding: 12px 28px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .sticky-order-btn:hover { background: var(--lime-dim); }
+  .sticky-order-btn:active { transform: scale(0.97); }
+  .sticky-delivery-btn {
+    background: transparent;
+    color: var(--muted);
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .sticky-delivery-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--black2);
+    border-top: 1px solid var(--border);
+    padding: 32px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    color: var(--lime);
+  }
+  footer p { font-size: 12px; color: var(--muted); font-weight: 300; }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--lime); }
+
+  /* ── Animations ── */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 640px) {
+    nav { padding: 16px 18px; }
+    .nav-links { display: none; }
+    .hero { padding: 36px 18px 32px; }
+    .hero h1 { font-size: 72px; }
+    .hero-stats { gap: 0; flex-wrap: wrap; }
+    .hero-stat { flex: 1 1 40%; margin-bottom: 16px; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .info-section { grid-template-columns: 1fr; gap: 48px; padding: 52px 18px; }
+    .location-inner { grid-template-columns: 1fr; }
+    .location-section { padding: 52px 18px; }
+    .featured-section { padding: 52px 18px; }
+    .sticky-bar { padding: 12px 16px; }
+    .sticky-bar-left { gap: 12px; }
+    .sticky-delivery-btn { display: none; }
+    footer { flex-direction: column; align-items: flex-start; padding: 28px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Promo Ticker -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span>Free delivery over $30</span>
+    <span>Open until 9:30pm tonight</span>
+    <span>New: Smash Burger Stack</span>
+    <span>Catering available</span>
+    <span>Order pickup — skip the wait</span>
+    <span>Free delivery over $30</span>
+    <span>Open until 9:30pm tonight</span>
+    <span>New: Smash Burger Stack</span>
+    <span>Catering available</span>
+    <span>Order pickup — skip the wait</span>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="logo">VOLT EATS</div>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#hours">Hours</a></li>
+    <li><a href="#location">Find Us</a></li>
+  </ul>
+  <a href="https://order.example.com" class="nav-cta" target="_blank">Order Now</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-bg-glow"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Portland's boldest bites</div>
+    <h1>EAT<br><em>BOLD.</em></h1>
+    <p class="hero-sub">No fuss. No wait. Just insanely good food made fresh — pickup ready in under 15 minutes.</p>
+    <div class="hero-ctas">
+      <a href="https://order.example.com" class="btn-lime" target="_blank">Order Pickup →</a>
+      <a href="https://doordash.com" class="btn-outline" target="_blank">Delivery via DoorDash</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">4.9★</div>
+      <div class="hero-stat-label">2,400+ Reviews</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">12 MIN</div>
+      <div class="hero-stat-label">Avg. Pickup Time</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">$0</div>
+      <div class="hero-stat-label">Pickup Fees</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">6YRS</div>
+      <div class="hero-stat-label">In Portland</div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Menu -->
+<section class="featured-section" id="menu">
+  <p class="section-eyebrow">On The Menu</p>
+  <h2 class="section-title">WHAT'S HOT</h2>
+
+  <div class="featured-grid">
+    <!-- Large card -->
+    <div class="feat-card large">
+      <div class="feat-card-hero">
+        🍔
+        <div class="feat-badge">🔥 Best Seller</div>
+      </div>
+      <div class="feat-card-body">
+        <div class="feat-card-name">Double Smash Burger Stack</div>
+        <div class="feat-card-desc">Two smash patties, American cheese, house pickles, shredded lettuce, and our secret volt sauce on a toasted brioche bun.</div>
+        <div class="feat-card-footer">
+          <div class="feat-price">$14</div>
+          <a href="https://order.example.com" class="feat-add-btn" target="_blank">Add to Order</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regular cards -->
+    <div class="feat-card">
+      <div class="feat-card-hero">
+        🌮
+        <div class="feat-badge">New</div>
+      </div>
+      <div class="feat-card-body">
+        <div class="feat-card-name">Crispy Chicken Tacos</div>
+        <div class="feat-card-desc">Double-fried chicken thigh, slaw, jalapeño crema. Three per order.</div>
+        <div class="feat-card-footer">
+          <div class="feat-price">$12</div>
+          <a href="https://order.example.com" class="feat-add-btn" target="_blank">Add</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-card-hero">🍟</div>
+      <div class="feat-card-body">
+        <div class="feat-card-name">Salt & Pepper Fries</div>
+        <div class="feat-card-desc">Double-fried, tossed in house seasoning. Add volt sauce for $1.</div>
+        <div class="feat-card-footer">
+          <div class="feat-price">$6</div>
+          <a href="https://order.example.com" class="feat-add-btn" target="_blank">Add</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-card-hero">🥤</div>
+      <div class="feat-card-body">
+        <div class="feat-card-name">House Lemonade</div>
+        <div class="feat-card-desc">Fresh-pressed with mint and a pinch of chili salt. Refills free on dine-in.</div>
+        <div class="feat-card-footer">
+          <div class="feat-price">$4</div>
+          <a href="https://order.example.com" class="feat-add-btn" target="_blank">Add</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-card-hero">🌯</div>
+      <div class="feat-card-body">
+        <div class="feat-card-name">Volt Wrap</div>
+        <div class="feat-card-desc">Grilled chicken, romaine, caesar dressing, crispy chickpeas in a toasted wrap.</div>
+        <div class="feat-card-footer">
+          <div class="feat-price">$13</div>
+          <a href="https://order.example.com" class="feat-add-btn" target="_blank">Add</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hours & Contact -->
+<section class="info-section" id="hours">
+  <div>
+    <p class="section-eyebrow">We're Open</p>
+    <h2 class="info-block-title">HOURS</h2>
+    <ul class="hours-list">
+      <li class="closed"><span class="day">Monday</span><span class="time">Closed</span></li>
+      <li><span class="day">Tue – Wed</span><span class="time">11am – 8:30pm</span></li>
+      <li class="today-row"><span class="day">Thursday ← Today</span><span class="time">11am – 9pm</span></li>
+      <li><span class="day">Friday</span><span class="time">11am – 9:30pm</span></li>
+      <li><span class="day">Saturday</span><span class="time">10:30am – 9:30pm</span></li>
+      <li><span class="day">Sunday</span><span class="time">10:30am – 8pm</span></li>
+    </ul>
+    <p style="font-size: 12px; color: var(--muted); margin-top: 14px; font-weight: 300;">Afternoon break 2:30 – 5pm (weekdays only)</p>
+  </div>
+
+  <div>
+    <p class="section-eyebrow">Call Us</p>
+    <h2 class="info-block-title">TALK TO US</h2>
+    <a href="tel:+15551234567" class="contact-big-phone">(555) 123-4567</a>
+    <p class="contact-sub">Pickup orders, large groups, quick questions — one call does it all. We pick up fast.</p>
+
+    <div class="contact-secondary">
+      <p class="contact-secondary-label">Events & Catering</p>
+      <a href="tel:+15551234568">(555) 123-4568</a>
+    </div>
+  </div>
+</section>
+
+<!-- Location -->
+<section class="location-section" id="location">
+  <p class="section-eyebrow">Find Us</p>
+  <h2 class="section-title">WE'RE RIGHT HERE</h2>
+
+  <div class="location-inner">
+    <div>
+      <div class="address-block">
+        <strong>VOLT EATS PDX</strong>
+        50 Burnside Ave, Portland OR 97201<br>
+        5-min walk from SE 26th & Powell<br>
+        <br>
+        🚗 Street parking on Burnside Ave<br>
+        🚇 Bus 9 / 17 — Burnside stop<br>
+        🚲 Bike rack out front
+      </div>
+      <a href="https://maps.google.com/?q=50+Burnside+Ave+Portland+OR+97201" class="directions-link" target="_blank">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/>
+        </svg>
+        Open in Google Maps
+      </a>
+    </div>
+
+    <a href="https://maps.google.com/?q=50+Burnside+Ave+Portland+OR+97201" class="map-box" target="_blank">
+      <svg width="44" height="44" viewBox="0 0 48 48" fill="none" style="position:relative; opacity:0.5">
+        <path d="M24 10 C18 10 14 14.5 14 20 C14 28 24 38 24 38 C24 38 34 28 34 20 C34 14.5 30 10 24 10Z" stroke="#C8F135" stroke-width="2" fill="rgba(200,241,53,0.1)"/>
+        <circle cx="24" cy="20" r="4" fill="#C8F135"/>
+      </svg>
+      <span>Tap to open directions</span>
+      <small>50 Burnside Ave, Portland OR</small>
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">VOLT EATS</div>
+  <p>© 2026 Volt Eats LLC · 50 Burnside Ave, Portland OR 97201</p>
+  <p><a href="tel:+15551234567">(555) 123-4567</a></p>
+</footer>
+
+<!-- Sticky Bottom Bar -->
+<div class="sticky-bar">
+  <div class="sticky-bar-left">
+    <div class="sticky-status">
+      <div class="status-dot"></div>
+      Open now · closes 9pm
+    </div>
+    <a href="tel:+15551234567" class="sticky-phone">(555) 123-4567</a>
+  </div>
+  <div class="sticky-bar-cta">
+    <a href="https://doordash.com" class="sticky-delivery-btn" target="_blank">DoorDash Delivery</a>
+    <a href="https://order.example.com" class="sticky-order-btn" target="_blank">Order Pickup →</a>
+  </div>
+</div>
+
+</body>
+</html>
