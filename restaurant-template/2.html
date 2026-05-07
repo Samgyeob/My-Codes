@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hearth Kitchen — Home-Cooked Since 1998</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Lato:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --terracotta: #C1623F;
+    --terracotta-light: #D9836A;
+    --terracotta-dark: #9B4A2C;
+    --cream: #FAF6EF;
+    --cream-dark: #F0E8D8;
+    --warm-brown: #5C3D2E;
+    --warm-brown-light: #8B6150;
+    --text-body: #3D2B1F;
+    --text-muted: #8B7355;
+    --border: rgba(92,61,46,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--cream);
+    color: var(--text-body);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── Info strip ── */
+  .info-strip {
+    background: var(--warm-brown);
+    color: #E8D5C4;
+    font-size: 13px;
+    padding: 8px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    letter-spacing: 0.02em;
+  }
+  .info-strip a { color: #E8D5C4; text-decoration: none; }
+  .info-strip a:hover { color: #fff; }
+  .info-strip .sep { opacity: 0.35; }
+
+  /* ── Nav ── */
+  nav {
+    background: var(--cream);
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--warm-brown);
+    letter-spacing: -0.01em;
+  }
+  .logo span { color: var(--terracotta); }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--terracotta); }
+  .nav-order-btn {
+    background: var(--terracotta);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    transition: background 0.2s;
+    text-decoration: none;
+  }
+  .nav-order-btn:hover { background: var(--terracotta-dark); }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: calc(100svh - 97px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 32px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 85% 40%, rgba(193,98,63,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 15% 70%, rgba(92,61,46,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 500;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 9vw, 68px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--warm-brown);
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.25s forwards;
+    max-width: 580px;
+  }
+  .hero-sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(17px, 3.5vw, 23px);
+    color: var(--warm-brown-light);
+    margin-bottom: 36px;
+    font-weight: 400;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+  }
+  .hero-cta-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.55s forwards;
+  }
+  .btn-primary {
+    background: var(--terracotta);
+    color: #fff;
+    padding: 15px 32px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    font-family: 'Lato', sans-serif;
+    transition: background 0.2s, transform 0.1s;
+    display: inline-block;
+  }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:hover { background: var(--terracotta-dark); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--warm-brown);
+    padding: 15px 28px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 400;
+    text-decoration: none;
+    font-family: 'Lato', sans-serif;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s, color 0.2s;
+    display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+  /* ── Section common ── */
+  section { padding: 72px 32px; }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 700;
+    color: var(--warm-brown);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+  .section-body {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 520px;
+    line-height: 1.85;
+  }
+
+  /* ── Menu ── */
+  .menu-section { background: var(--cream-dark); }
+  .menu-grid {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .menu-card {
+    background: var(--cream);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(92,61,46,0.1); }
+  .menu-card-img {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    background: linear-gradient(135deg, var(--cream-dark) 0%, rgba(193,98,63,0.1) 100%);
+  }
+  .menu-card-body { padding: 18px 20px 20px; }
+  .menu-card-tag {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .menu-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--warm-brown);
+    margin-bottom: 6px;
+  }
+  .menu-card-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  .menu-card-price {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--terracotta-dark);
+  }
+
+  /* ── Contact & Hours ── */
+  .contact-section {
+    background: var(--warm-brown);
+    color: #E8D5C4;
+  }
+  .contact-section .section-label { color: var(--terracotta-light); }
+  .contact-section .section-title { color: #FAF0E6; }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 40px;
+  }
+  .contact-block h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta-light);
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+  .contact-phone {
+    display: block;
+    font-size: 28px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    color: #FAF0E6;
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color 0.2s;
+  }
+  .contact-phone:hover { color: var(--terracotta-light); }
+  .contact-note {
+    font-size: 13px;
+    color: rgba(232,213,196,0.65);
+    line-height: 1.7;
+  }
+  .hours-table { width: 100%; border-collapse: collapse; }
+  .hours-table tr td {
+    padding: 7px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(232,213,196,0.1);
+  }
+  .hours-table td:first-child {
+    color: rgba(232,213,196,0.6);
+    width: 100px;
+  }
+  .hours-table td:last-child { color: #FAF0E6; font-weight: 500; }
+  .hours-table .today td { color: var(--terracotta-light); }
+  .hours-table .today td:last-child { color: #fff; }
+
+  /* ── Location ── */
+  .location-section { background: var(--cream); }
+  .location-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+    margin-top: 40px;
+  }
+  .location-detail {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 2;
+  }
+  .location-detail strong {
+    display: block;
+    color: var(--warm-brown);
+    font-weight: 600;
+    font-size: 17px;
+    margin-bottom: 10px;
+    font-family: 'Playfair Display', serif;
+  }
+  .directions-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    background: var(--terracotta);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    font-family: 'Lato', sans-serif;
+    transition: background 0.2s;
+  }
+  .directions-btn:hover { background: var(--terracotta-dark); }
+  .map-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 8px;
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .map-placeholder:hover { background: rgba(193,98,63,0.06); }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--warm-brown);
+    color: rgba(232,213,196,0.6);
+    padding: 36px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FAF0E6;
+  }
+  footer a { color: rgba(232,213,196,0.6); text-decoration: none; }
+  footer a:hover { color: var(--terracotta-light); }
+
+  /* ── Animation ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 640px) {
+    .info-strip { gap: 12px; font-size: 12px; }
+    nav { padding: 14px 18px; }
+    .nav-links { display: none; }
+    .hero { padding: 32px 20px 48px; }
+    section { padding: 52px 20px; }
+    .contact-grid { grid-template-columns: 1fr; gap: 32px; }
+    .location-inner { grid-template-columns: 1fr; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Info strip -->
+<div class="info-strip">
+  <a href="tel:+15551234567">📞 (555) 123-4567</a>
+  <span class="sep">|</span>
+  <span>Open Daily 11am – 9pm</span>
+  <span class="sep">|</span>
+  <a href="https://maps.google.com/?q=50+Hearth+Lane+Portland+OR" target="_blank">📍 50 Hearth Lane, Portland OR</a>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="logo">Hearth <span>Kitchen</span></div>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#hours">Hours</a></li>
+    <li><a href="#location">Find Us</a></li>
+  </ul>
+  <a href="https://order.example.com" class="nav-order-btn" target="_blank">Order Online</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <p class="hero-eyebrow">Home-cooked since 1998</p>
+  <h1>The warmth of a<br>home-cooked meal</h1>
+  <p class="hero-sub">Real ingredients, slow-simmered broths, made with love every day.</p>
+  <div class="hero-cta-group">
+    <a href="https://order.example.com" class="btn-primary" target="_blank">Order Pickup Now</a>
+    <a href="#menu" class="btn-secondary">See Today's Menu</a>
+  </div>
+</section>
+
+<!-- Menu -->
+<section class="menu-section" id="menu">
+  <p class="section-label">Today's Menu</p>
+  <h2 class="section-title">Honest food, made fresh<br>every single morning</h2>
+  <p class="section-body">We source local ingredients and never use artificial flavors. Our broths simmer for six hours — you can taste the difference.</p>
+
+  <div class="menu-grid">
+    <div class="menu-card">
+      <div class="menu-card-img">🍲</div>
+      <div class="menu-card-body">
+        <p class="menu-card-tag">Soups &amp; Stews</p>
+        <p class="menu-card-name">Farmhouse Stew Plate</p>
+        <p class="menu-card-desc">Slow-simmered beef and root vegetable stew with house-baked bread. Comes with two seasonal sides.</p>
+        <p class="menu-card-price">$14.00</p>
+      </div>
+    </div>
+
+    <div class="menu-card">
+      <div class="menu-card-img">🍳</div>
+      <div class="menu-card-body">
+        <p class="menu-card-tag">Fan Favorite</p>
+        <p class="menu-card-name">Sunday Braised Chicken</p>
+        <p class="menu-card-desc">Free-range chicken braised in white wine and herbs, served over creamy mashed potatoes.</p>
+        <p class="menu-card-price">$16.00</p>
+      </div>
+    </div>
+
+    <div class="menu-card">
+      <div class="menu-card-img">🥗</div>
+      <div class="menu-card-body">
+        <p class="menu-card-tag">Seasonal Special</p>
+        <p class="menu-card-name">Summer Garden Bowl</p>
+        <p class="menu-card-desc">Seven kinds of fresh-picked greens and roasted vegetables tossed in our house lemon dressing.</p>
+        <p class="menu-card-price">$13.00</p>
+      </div>
+    </div>
+
+    <div class="menu-card">
+      <div class="menu-card-img">🥘</div>
+      <div class="menu-card-body">
+        <p class="menu-card-tag">Wholesome</p>
+        <p class="menu-card-name">Grandma's Pot Pie</p>
+        <p class="menu-card-desc">Flaky hand-rolled crust filled with chicken, peas, and carrots in a rich cream sauce. A house classic.</p>
+        <p class="menu-card-price">$15.00</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact & Hours -->
+<section class="contact-section" id="hours">
+  <p class="section-label">Reservations &amp; Inquiries</p>
+  <h2 class="section-title">Give us a call anytime</h2>
+
+  <div class="contact-grid">
+    <div class="contact-block">
+      <h3>Main Line</h3>
+      <a href="tel:+15551234567" class="contact-phone">(555) 123-4567</a>
+      <p class="contact-note">One call and your pickup order is set.<br>For parties of 10 or more, please call a day ahead — we love to be ready for you.</p>
+
+      <div style="margin-top: 28px;">
+        <h3>Events &amp; Catering</h3>
+        <a href="tel:+15551234568" class="contact-phone" style="font-size: 20px;">(555) 123-4568</a>
+        <p class="contact-note">Birthdays, family dinners, office lunches — we'll make your occasion feel like home.</p>
+      </div>
+    </div>
+
+    <div class="contact-block">
+      <h3>Hours</h3>
+      <table class="hours-table">
+        <tr><td>Monday</td><td>Closed</td></tr>
+        <tr><td>Tue – Wed</td><td>11:00 am – 8:30 pm</td></tr>
+        <tr class="today"><td>Thursday</td><td>11:00 am – 9:00 pm ← today</td></tr>
+        <tr><td>Friday</td><td>11:00 am – 9:30 pm</td></tr>
+        <tr><td>Saturday</td><td>10:30 am – 9:30 pm</td></tr>
+        <tr><td>Sunday</td><td>10:30 am – 8:00 pm</td></tr>
+      </table>
+      <p class="contact-note" style="margin-top: 12px;">Afternoon break 2:30 – 5:00 pm (weekdays only)</p>
+    </div>
+  </div>
+</section>
+
+<!-- Location -->
+<section class="location-section" id="location">
+  <p class="section-label">Find Us</p>
+  <h2 class="section-title">We're easy to find —<br>and worth the trip</h2>
+
+  <div class="location-inner">
+    <div>
+      <div class="location-detail">
+        <strong>Hearth Kitchen</strong>
+        50 Hearth Lane, Portland OR 97201<br>
+        5-minute walk from Powell Blvd &amp; SE 26th Ave<br>
+        <br>
+        🚗 Parking: Free lot behind the building<br>
+        🚇 Transit: Bus 9 / 17 — Hearth Lane stop<br>
+        🚲 Bike racks available out front
+      </div>
+
+      <a href="https://maps.google.com/?q=50+Hearth+Lane+Portland+OR+97201" target="_blank" class="directions-btn">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/>
+        </svg>
+        Get Directions on Google Maps
+      </a>
+    </div>
+
+    <a href="https://maps.google.com/?q=50+Hearth+Lane+Portland+OR+97201" class="map-placeholder" target="_blank">
+      <svg width="52" height="52" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.35">
+        <path d="M24 10 C18 10 14 14.5 14 20 C14 28 24 38 24 38 C24 38 34 28 34 20 C34 14.5 30 10 24 10Z" stroke="#C1623F" stroke-width="2.5" fill="rgba(193,98,63,0.15)"/>
+        <circle cx="24" cy="20" r="4" fill="#C1623F"/>
+        <path d="M8 44 L40 44" stroke="#8B6150" stroke-width="1.5" stroke-dasharray="3 3"/>
+      </svg>
+      <span style="font-size: 13px; color: var(--terracotta); font-weight: 500;">Tap to open in Google Maps</span>
+      <span style="font-size: 12px; color: var(--text-muted);">50 Hearth Lane, Portland OR</span>
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">Hearth Kitchen</div>
+  <div style="text-align: center;">
+    © 2026 Hearth Kitchen LLC &nbsp;|&nbsp; Owner: Jane Doe<br>
+    50 Hearth Lane, Portland OR 97201
+  </div>
+  <div>
+    <a href="tel:+15551234567">(555) 123-4567</a>
+  </div>
+</footer>
+
+</body>
+</html>
